@@ -2,8 +2,10 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🔥 ระบบรายงานจุดเผาไหม้</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>🔥 ระบบรายงานจุดเผาไหม้ สุโขทัย</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
@@ -27,14 +29,49 @@
     box-shadow: 0 4px 20px rgba(0,0,0,0.3);
   }
   .top-bar h1 {
-    color: #fff; font-size: 16px; font-weight: 600; flex: 1;
+    color: #fff; font-size: 15px; font-weight: 600; flex: 1;
     text-shadow: 0 0 20px rgba(255,107,53,0.5);
   }
   .top-bar .logo { font-size: 24px; }
+  .top-bar .admin-btn {
+    background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+    color: #ccc; padding: 4px 10px; border-radius: 8px; font-size: 11px;
+    cursor: pointer; font-family: inherit; transition: 0.3s;
+  }
+  .top-bar .admin-btn:hover { background: rgba(255,255,255,0.25); color: #fff; }
+
+  /* ===== Info Banner ===== */
+  .info-banner {
+    position: fixed; top: 52px; left: 0; right: 0; z-index: 1001;
+    background: linear-gradient(135deg, #E63946, #FF6B35);
+    color: #fff; padding: 6px 12px; font-size: 11px;
+    text-align: center; line-height: 1.5;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    animation: bannerGlow 3s ease-in-out infinite;
+  }
+  @keyframes bannerGlow {
+    0%,100% { box-shadow: 0 2px 10px rgba(230,57,70,0.3); }
+    50% { box-shadow: 0 2px 20px rgba(230,57,70,0.6); }
+  }
+  .info-banner .hotline { font-weight: 700; font-size: 13px; }
+  .info-banner .close-banner {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: rgba(255,255,255,0.7);
+    font-size: 16px; cursor: pointer;
+  }
+
+  /* ===== PM2.5 Message ===== */
+  .pm25-strip {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 999;
+    background: linear-gradient(90deg, #2D6A4F, #1a1a2e, #2D6A4F);
+    color: #fff; text-align: center; padding: 6px 10px;
+    font-size: 11px; letter-spacing: 0.5px;
+  }
+  .pm25-strip b { color: #E9C46A; }
 
   /* ===== Filter Bar ===== */
   .filter-bar {
-    position: fixed; top: 52px; left: 0; right: 0; z-index: 999;
+    position: fixed; top: 88px; left: 0; right: 0; z-index: 999;
     background: var(--glass); padding: 8px 12px;
     display: flex; gap: 6px; overflow-x: auto;
     backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0,0,0,0.1);
@@ -51,9 +88,21 @@
   .filter-btn[data-type="เผาป่า"].active { background: var(--forest); }
   .filter-btn[data-type="อื่นๆ"].active { background: var(--danger); }
 
+  /* ===== Age Legend ===== */
+  .age-legend {
+    position: fixed; top: 134px; left: 12px; z-index: 998;
+    background: rgba(26,26,46,0.9); color: #fff; padding: 8px 12px;
+    border-radius: 10px; font-size: 10px; line-height: 1.8;
+    backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);
+  }
+  .age-legend .dot {
+    display: inline-block; width: 10px; height: 10px;
+    border-radius: 50%; margin-right: 4px; vertical-align: middle;
+  }
+
   /* ===== Stats Badge ===== */
   .stats-badge {
-    position: fixed; top: 100px; right: 12px; z-index: 998;
+    position: fixed; top: 134px; right: 12px; z-index: 998;
     background: rgba(26,26,46,0.9); color: #fff; padding: 10px 14px;
     border-radius: 12px; font-size: 12px; line-height: 1.6;
     backdrop-filter: blur(10px); border: 1px solid rgba(255,107,53,0.3);
@@ -67,10 +116,10 @@
     box-shadow: var(--shadow); transition: all 0.3s; color: #fff;
   }
   .fab:hover { transform: scale(1.1); }
-  .fab-report { bottom: 24px; right: 24px; background: linear-gradient(135deg, var(--fire), var(--danger)); }
-  .fab-ai { bottom: 24px; left: 24px; background: linear-gradient(135deg, #6C63FF, #3F37C9); }
-  .fab-refresh { bottom: 90px; right: 24px; background: linear-gradient(135deg, var(--forest), #40916C); font-size: 20px; width: 46px; height: 46px; }
-  .fab-dash { bottom: 90px; left: 24px; background: linear-gradient(135deg, #FF9F1C, #E76F51); font-size: 20px; width: 46px; height: 46px; }
+  .fab-report { bottom: 46px; right: 24px; background: linear-gradient(135deg, var(--fire), var(--danger)); }
+  .fab-ai { bottom: 46px; left: 24px; background: linear-gradient(135deg, #6C63FF, #3F37C9); }
+  .fab-refresh { bottom: 112px; right: 24px; background: linear-gradient(135deg, var(--forest), #40916C); font-size: 20px; width: 46px; height: 46px; }
+  .fab-dash { bottom: 112px; left: 24px; background: linear-gradient(135deg, #FF9F1C, #E76F51); font-size: 20px; width: 46px; height: 46px; }
 
   /* ===== Modal ===== */
   .modal-overlay {
@@ -96,8 +145,6 @@
     border-radius: 10px; font-size: 14px; font-family: inherit; transition: border-color 0.3s;
   }
   .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--fire); }
-
-  /* Type Selector */
   .type-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
   .type-card {
     padding: 12px 8px; border: 2px solid #e0e0e0; border-radius: 12px;
@@ -105,8 +152,6 @@
   }
   .type-card.selected { border-color: var(--fire); background: #FFF5F0; transform: scale(1.03); }
   .type-card .icon { font-size: 28px; display: block; margin-bottom: 4px; }
-
-  /* Size Selector */
   .size-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .size-card {
     padding: 10px; border: 2px solid #e0e0e0; border-radius: 10px;
@@ -128,27 +173,35 @@
     color: #fff; border: none; border-radius: 50%; width: 28px; height: 28px;
     cursor: pointer; font-size: 16px; display: none;
   }
-
-  /* Submit */
   .btn-submit {
     width: 100%; padding: 14px; background: linear-gradient(135deg, var(--fire), var(--danger));
     color: #fff; border: none; border-radius: 12px; font-size: 16px;
-    font-weight: 600; cursor: pointer; font-family: inherit;
-    transition: all 0.3s; margin-top: 8px;
+    font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.3s; margin-top: 8px;
   }
   .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(230,57,70,0.4); }
   .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
+  /* Location */
+  .location-display {
+    background: #E8F5E9; padding: 10px 14px; border-radius: 10px;
+    font-size: 13px; color: var(--forest); display: flex; align-items: center; gap: 8px;
+  }
+  .location-display .pin-icon { font-size: 20px; }
+  .drag-hint {
+    font-size: 11px; color: var(--fire); margin-top: 4px;
+    display: flex; align-items: center; gap: 4px;
+  }
+
   /* Pin Mode Banner */
   .pin-banner {
-    position: fixed; top: 52px; left: 0; right: 0; z-index: 1500;
+    position: fixed; top: 88px; left: 0; right: 0; z-index: 1500;
     background: linear-gradient(135deg, var(--danger), var(--fire));
     color: #fff; text-align: center; padding: 12px; font-size: 14px;
     display: none; animation: pulse 1.5s infinite;
   }
   @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.8; } }
 
-  /* AI Summary Modal */
+  /* ===== AI Modal ===== */
   .ai-modal {
     background: #fff; width: 100%; max-width: 500px; max-height: 90vh;
     border-radius: 20px 20px 0 0; overflow-y: auto; padding: 24px;
@@ -164,21 +217,45 @@
   .ai-content .big-number { font-size: 32px; font-weight: 700; color: var(--fire); }
 
   /* Popup */
-  .fire-popup { min-width: 220px; }
+  .fire-popup { min-width: 240px; }
   .fire-popup h3 { font-size: 14px; color: var(--fire); margin-bottom: 6px; }
   .fire-popup .meta { font-size: 12px; color: #666; line-height: 1.6; }
   .fire-popup img { width: 100%; border-radius: 8px; margin-top: 8px; }
-  .fire-popup .status { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 11px; background: #FFF3CD; color: #856404; margin-top: 6px; }
+  .fire-popup .status { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 11px; margin-top: 6px; }
+  .fire-popup .age-badge { display: inline-block; padding: 2px 8px; border-radius: 8px; font-size: 10px; color: #fff; margin-left: 4px; }
 
-  /* Location display in form */
-  .location-display {
-    background: #E8F5E9; padding: 10px 14px; border-radius: 10px;
-    font-size: 13px; color: var(--forest); display: flex;
-    align-items: center; gap: 8px;
+  /* ===== Admin Modal ===== */
+  .admin-panel {
+    background: #fff; width: 100%; max-width: 500px; max-height: 90vh;
+    border-radius: 20px 20px 0 0; overflow-y: auto; padding: 24px;
+    animation: slideUp 0.3s ease;
   }
-  .location-display .pin-icon { font-size: 20px; }
+  .admin-panel h2 { font-size: 18px; margin-bottom: 16px; }
+  .admin-card {
+    background: #f8f9fa; border-radius: 12px; padding: 16px;
+    margin-bottom: 12px; border: 1px solid #e0e0e0;
+  }
+  .admin-card h3 { font-size: 14px; margin-bottom: 8px; color: #333; }
+  .admin-card a {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; background: var(--forest); color: #fff;
+    border-radius: 8px; text-decoration: none; font-size: 13px;
+    transition: 0.3s;
+  }
+  .admin-card a:hover { background: #1B4332; }
+  .admin-input {
+    width: 100%; padding: 10px 14px; border: 2px solid #e0e0e0;
+    border-radius: 10px; font-size: 14px; font-family: inherit; margin-bottom: 8px;
+  }
+  .admin-input:focus { outline: none; border-color: var(--fire); }
+  .admin-btn-action {
+    padding: 8px 20px; border: none; border-radius: 8px; cursor: pointer;
+    font-family: inherit; font-size: 13px; font-weight: 600; transition: 0.3s;
+  }
+  .admin-btn-login { background: linear-gradient(135deg, #6C63FF, #3F37C9); color: #fff; }
+  .admin-btn-save { background: linear-gradient(135deg, var(--fire), var(--danger)); color: #fff; }
 
-  /* Loading */
+  /* Loading & Toast */
   .loading-spinner {
     display: inline-block; width: 20px; height: 20px;
     border: 3px solid #fff; border-top-color: transparent;
@@ -186,21 +263,18 @@
     vertical-align: middle; margin-right: 8px;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* Toast */
   .toast {
-    position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+    position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%);
     background: #333; color: #fff; padding: 12px 24px; border-radius: 25px;
     font-size: 14px; z-index: 3000; opacity: 0; transition: opacity 0.3s;
-    pointer-events: none;
+    pointer-events: none; max-width: 90%;
   }
   .toast.show { opacity: 1; }
 
-  /* ===== Dashboard Overlay ===== */
+  /* ===== Dashboard ===== */
   .dash-overlay {
     position: fixed; inset: 0; z-index: 2000;
-    background: #f0f2f5; display: none;
-    overflow-y: auto; flex-direction: column;
+    background: #f0f2f5; display: none; overflow-y: auto; flex-direction: column;
   }
   .dash-overlay.show { display: flex; }
   .dash-header {
@@ -217,8 +291,6 @@
   }
   .dash-close:hover { background: rgba(255,255,255,0.3); }
   .dash-body { padding: 12px; max-width: 800px; margin: 0 auto; width: 100%; }
-
-  /* KPI Cards */
   .kpi-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
   .kpi-card {
     background: #fff; border-radius: 14px; padding: 14px;
@@ -236,55 +308,33 @@
   .kpi-card.c3 .kpi-val { color: var(--forest); }
   .kpi-card.c4 .kpi-val { color: #6C63FF; }
   .kpi-label { font-size: 12px; color: #888; margin-top: 2px; }
-
-  /* Chart Cards */
   .chart-card {
     background: #fff; border-radius: 14px; padding: 16px;
     margin-bottom: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.06);
   }
   .chart-card h3 { font-size: 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; color: #333; }
   .chart-card canvas { max-height: 260px; }
-
-  /* Area Table */
   .area-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .area-table th {
-    background: #f8f9fa; padding: 8px 10px; text-align: left;
-    font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0;
-  }
+  .area-table th { background: #f8f9fa; padding: 8px 10px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; }
   .area-table td { padding: 8px 10px; border-bottom: 1px solid #f0f0f0; }
   .area-table tr:hover { background: #FFF8F0; }
-  .area-rank {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 24px; height: 24px; border-radius: 50%; font-size: 11px; font-weight: 700; color: #fff;
-  }
+  .area-rank { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; font-size: 11px; font-weight: 700; color: #fff; }
   .area-rank.r1 { background: var(--danger); }
   .area-rank.r2 { background: var(--fire); }
   .area-rank.r3 { background: var(--field); color: #333; }
   .area-rank.r4 { background: #ccc; color: #333; }
   .area-bar-bg { background: #f0f0f0; border-radius: 4px; height: 8px; width: 100%; }
   .area-bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--fire), var(--danger)); transition: width 0.6s ease; }
-
-  /* Date Range */
   .date-range { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
   .date-range label { font-size: 12px; color: #666; }
-  .date-range input[type="date"] {
-    padding: 6px 10px; border: 2px solid #e0e0e0; border-radius: 8px;
-    font-family: inherit; font-size: 13px;
-  }
+  .date-range input[type="date"] { padding: 6px 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-family: inherit; font-size: 13px; }
   .date-range input:focus { border-color: var(--fire); outline: none; }
-  .date-range .btn-filter {
-    padding: 6px 16px; background: var(--fire); color: #fff;
-    border: none; border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 600;
-  }
-  .date-range .btn-reset {
-    padding: 6px 12px; background: #eee; color: #555;
-    border: none; border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 13px;
-  }
+  .date-range .btn-filter { padding: 6px 16px; background: var(--fire); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 600; }
+  .date-range .btn-reset { padding: 6px 12px; background: #eee; color: #555; border: none; border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 13px; }
   .no-data { text-align: center; padding: 40px; color: #aaa; font-size: 14px; }
 
-  /* Responsive */
   @media (min-width: 600px) {
-    .modal, .ai-modal { border-radius: 20px; margin: auto; max-height: 85vh; }
+    .modal, .ai-modal, .admin-panel { border-radius: 20px; margin: auto; max-height: 85vh; }
     .modal-overlay.show { align-items: center; }
     .kpi-row { grid-template-columns: repeat(4, 1fr); }
   }
@@ -295,8 +345,19 @@
 <!-- ===== Top Bar ===== -->
 <div class="top-bar">
   <span class="logo">🔥</span>
-  <h1>ระบบรายงานจุดเผาไหม้</h1>
+  <h1>รายงานจุดเผาไหม้ สุโขทัย</h1>
   <span style="color:#aaa;font-size:12px" id="clock"></span>
+  <button class="admin-btn" onclick="showAdminLogin()">🔐 Admin</button>
+</div>
+
+<!-- ===== Info Banner ===== -->
+<div class="info-banner" id="infoBanner">
+  <span>🚨 พบเห็นไฟป่าหรือลักลอบเผา โทรแจ้ง</span>
+  <span class="hotline">📞 1362</span>
+  <span>หรือ</span>
+  <span class="hotline">📞 1784</span>
+  <span>ตลอด 24 ชม.</span>
+  <button class="close-banner" onclick="document.getElementById('infoBanner').style.display='none';document.querySelector('.filter-bar').style.top='52px';document.querySelector('.age-legend').style.top='98px';document.querySelector('.stats-badge').style.top='98px'">&times;</button>
 </div>
 
 <!-- ===== Filter Bar ===== -->
@@ -306,6 +367,15 @@
   <button class="filter-btn" data-type="เผาไร่นา" onclick="setFilter('เผาไร่นา')">🌾 เผาไร่นา</button>
   <button class="filter-btn" data-type="เผาป่า" onclick="setFilter('เผาป่า')">🌲 เผาป่า</button>
   <button class="filter-btn" data-type="อื่นๆ" onclick="setFilter('อื่นๆ')">⚠️ อื่นๆ</button>
+</div>
+
+<!-- ===== Age Legend ===== -->
+<div class="age-legend">
+  <b>⏱️ อายุจุดเผา</b><br>
+  <span class="dot" style="background:#E63946"></span> &lt; 24 ชม.<br>
+  <span class="dot" style="background:#FF6B35"></span> 24-48 ชม.<br>
+  <span class="dot" style="background:#E9C46A"></span> 48-72 ชม.<br>
+  <span class="dot" style="background:#999"></span> &gt; 72 ชม.
 </div>
 
 <!-- ===== Stats Badge ===== -->
@@ -318,7 +388,7 @@
 <div id="map"></div>
 
 <!-- ===== Pin Mode Banner ===== -->
-<div class="pin-banner" id="pinBanner">📍 แตะบนแผนที่เพื่อปักหมุดตำแหน่งที่เกิดไฟ</div>
+<div class="pin-banner" id="pinBanner">📍 แตะบนแผนที่เพื่อปักหมุด — ลากหมุดเพื่อปรับตำแหน่ง</div>
 
 <!-- ===== FABs ===== -->
 <button class="fab fab-report" onclick="startReport()" title="รายงานจุดเผาไหม้">📢</button>
@@ -326,18 +396,23 @@
 <button class="fab fab-dash" onclick="openDashboard()" title="Dashboard">📊</button>
 <button class="fab fab-refresh" onclick="loadReports()" title="รีเฟรชข้อมูล">🔄</button>
 
+<!-- ===== PM2.5 Strip ===== -->
+<div class="pm25-strip">
+  🌿 <b>หยุดเผา ลดฝุ่น PM2.5</b> เพื่อลมหายใจของคนสุโขทัย 💚 ใช้งานได้ทุกแพลตฟอร์ม Android · iOS · PC
+</div>
+
 <!-- ===== Report Modal ===== -->
 <div class="modal-overlay" id="reportModal">
   <div class="modal" style="position:relative">
     <button class="modal-close" onclick="closeModal()">&times;</button>
     <h2>📢 แจ้งเหตุเผาไหม้</h2>
-
     <div class="form-group">
       <label>📍 ตำแหน่งที่เกิดเหตุ</label>
       <div class="location-display" id="locationDisplay">
         <span class="pin-icon">📌</span>
         <span id="locationText">ยังไม่ได้เลือกตำแหน่ง</span>
       </div>
+      <div class="drag-hint">↕️ ลากหมุดบนแผนที่เพื่อปรับตำแหน่งจุดเผาไหม้ได้</div>
     </div>
     <div class="form-group">
       <label>👤 ชื่อผู้รายงาน</label>
@@ -386,8 +461,51 @@
   <div class="ai-modal" style="position:relative">
     <button class="modal-close" onclick="closeAIModal()">&times;</button>
     <h2>🤖 บทสรุปผู้บริหาร</h2>
-    <div class="ai-content" id="aiContent">
-      <p style="text-align:center;padding:40px;color:#999">กำลังวิเคราะห์ข้อมูล...</p>
+    <div class="ai-content" id="aiContent"></div>
+  </div>
+</div>
+
+<!-- ===== Admin Modal ===== -->
+<div class="modal-overlay" id="adminModal">
+  <div class="admin-panel" style="position:relative">
+    <button class="modal-close" onclick="closeAdminModal()">&times;</button>
+
+    <!-- Login Form -->
+    <div id="adminLoginView">
+      <h2>🔐 เข้าสู่ระบบผู้ดูแล</h2>
+      <div class="admin-card">
+        <input class="admin-input" type="text" id="adminUser" placeholder="Username">
+        <input class="admin-input" type="password" id="adminPass" placeholder="Password">
+        <button class="admin-btn-action admin-btn-login" onclick="adminLogin()">เข้าสู่ระบบ</button>
+      </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="adminPanelView" style="display:none">
+      <h2>⚙️ แผงควบคุมผู้ดูแลระบบ</h2>
+
+      <div class="admin-card">
+        <h3>📊 Google Sheets ข้อมูลรายงาน</h3>
+        <p style="font-size:12px;color:#888;margin-bottom:8px">เปิดดูข้อมูลรายงานทั้งหมดใน Google Sheets</p>
+        <a id="sheetLink" href="#" target="_blank">📄 เปิด Google Sheets</a>
+      </div>
+
+      <div class="admin-card">
+        <h3>📈 สถิติระบบ</h3>
+        <div id="adminStats" style="font-size:13px;line-height:2"></div>
+      </div>
+
+      <div class="admin-card">
+        <h3>🔑 เปลี่ยนรหัสผ่าน</h3>
+        <input class="admin-input" type="password" id="pinCode" placeholder="PIN Code (4 หลัก)">
+        <input class="admin-input" type="password" id="newPass" placeholder="รหัสผ่านใหม่">
+        <input class="admin-input" type="password" id="confirmPass" placeholder="ยืนยันรหัสผ่านใหม่">
+        <button class="admin-btn-action admin-btn-save" onclick="changePassword()">💾 บันทึกรหัสผ่านใหม่</button>
+      </div>
+
+      <div style="text-align:center;margin-top:16px">
+        <button class="admin-btn-action" style="background:#eee;color:#555" onclick="adminLogout()">🚪 ออกจากระบบ</button>
+      </div>
     </div>
   </div>
 </div>
@@ -400,27 +518,22 @@
     <button class="dash-close" onclick="closeDashboard()">✕</button>
   </div>
   <div class="dash-body">
-    <!-- Date Range -->
     <div class="date-range">
-      <label>จาก</label>
-      <input type="date" id="dashDateFrom">
-      <label>ถึง</label>
-      <input type="date" id="dashDateTo">
+      <label>จาก</label><input type="date" id="dashDateFrom">
+      <label>ถึง</label><input type="date" id="dashDateTo">
       <button class="btn-filter" onclick="applyDashFilter()">กรอง</button>
       <button class="btn-reset" onclick="resetDashFilter()">ล้าง</button>
     </div>
-    <!-- KPI -->
     <div class="kpi-row">
       <div class="kpi-card c1"><div class="kpi-val" id="kpiTotal">0</div><div class="kpi-label">จุดเผาทั้งหมด</div></div>
       <div class="kpi-card c2"><div class="kpi-val" id="kpiPending">0</div><div class="kpi-label">รอดำเนินการ</div></div>
-      <div class="kpi-card c3"><div class="kpi-val" id="kpiTopType">-</div><div class="kpi-label">ประเภทที่พบมากสุด</div></div>
+      <div class="kpi-card c3"><div class="kpi-val" id="kpiTopType">-</div><div class="kpi-label">ประเภทสูงสุด</div></div>
       <div class="kpi-card c4"><div class="kpi-val" id="kpiPeakTime">-</div><div class="kpi-label">ช่วงเวลาพีค</div></div>
     </div>
-    <!-- Charts -->
     <div class="chart-card"><h3>🔥 สัดส่วนประเภทการเผา</h3><canvas id="chartType"></canvas></div>
-    <div class="chart-card"><h3>📅 จำนวนจุดเผาไหม้รายวัน</h3><canvas id="chartDaily"></canvas></div>
+    <div class="chart-card"><h3>📅 จำนวนจุดเผารายวัน</h3><canvas id="chartDaily"></canvas></div>
     <div class="chart-card"><h3>🕐 ช่วงเวลาที่เกิดเหตุ</h3><canvas id="chartTime"></canvas></div>
-    <div class="chart-card"><h3>📍 พื้นที่ที่เกิดเหตุบ่อย (Top 10)</h3><div id="areaTableContainer"></div></div>
+    <div class="chart-card"><h3>📍 พื้นที่เกิดเหตุบ่อย (Top 10)</h3><div id="areaTableContainer"></div></div>
     <div class="chart-card"><h3>🗺️ ความหนาแน่นจุดเผาตามโซน</h3><canvas id="chartArea"></canvas></div>
   </div>
 </div>
@@ -432,9 +545,22 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 // ============================================================
-// ⚠️ ใส่ URL ของ Google Apps Script Web App ที่นี่
+// ⚠️  CONFIG — ใส่ URL ตรงนี้
 // ============================================================
 const API_URL = 'https://script.google.com/macros/s/AKfycbza6-kZIlgVui6wrviLapAzRa0KxglSzvDlxWuJwKC_NKfx024NoUi72EKjavHFBlG1/exec';
+
+// Google Sheet ID (ดูจาก URL ของ Sheet: https://docs.google.com/spreadsheets/d/XXXXXXX/edit)
+const SHEET_ID = 'https://docs.google.com/spreadsheets/d/1Sk5P2deo3Pq0mItb9QO3C6mqjBp9zuoMu8KNlq5ky4Q/edit?gid=509253434#gid=509253434';
+
+// ============================================================
+// Admin Credentials (obfuscated)
+// ============================================================
+const _0xADM = { u: atob('YWRtaW4='), p: atob('YWRtaW4xMjM0'), k: atob('MTIwNw==') };
+function _getAdm() {
+  const stored = localStorage.getItem('_fp');
+  return stored ? JSON.parse(stored) : { u: _0xADM.u, p: _0xADM.p };
+}
+function _setAdm(u, p) { localStorage.setItem('_fp', JSON.stringify({ u, p })); }
 
 // ============================================================
 // State
@@ -443,9 +569,10 @@ let map, reports = [], markers = [], currentFilter = 'all';
 let selectedLat = null, selectedLng = null;
 let selectedType = '', selectedSize = '';
 let pinMode = false, tempMarker = null;
+let isAdminLoggedIn = false;
 
 // ============================================================
-// Fire Icons Config
+// Fire Icons
 // ============================================================
 const fireIcons = {
   'เผาขยะ': { icon: '🗑️', color: '#8D99AE' },
@@ -456,6 +583,20 @@ const fireIcons = {
 const sizeScale = { 'เล็ก': 28, 'กลาง': 36, 'ใหญ่': 46 };
 
 // ============================================================
+// Age Color System
+// ============================================================
+function getAgeInfo(datetimeStr) {
+  const dt = parseDateTH(datetimeStr);
+  if (!dt) return { color: '#999', label: 'ไม่ทราบ', hours: 0, bg: '#999' };
+  const hours = (Date.now() - dt.getTime()) / (1000 * 60 * 60);
+
+  if (hours <= 24) return { color: '#E63946', label: '< 24 ชม.', hours: Math.round(hours), bg: '#E63946' };
+  if (hours <= 48) return { color: '#FF6B35', label: '24-48 ชม.', hours: Math.round(hours), bg: '#FF6B35' };
+  if (hours <= 72) return { color: '#E9C46A', label: '48-72 ชม.', hours: Math.round(hours), bg: '#E9C46A' };
+  return { color: '#999', label: '> 72 ชม.', hours: Math.round(hours), bg: '#999' };
+}
+
+// ============================================================
 // Map Init
 // ============================================================
 function initMap() {
@@ -463,43 +604,89 @@ function initMap() {
 
   const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Esri', maxZoom: 19 });
   const labels = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', { maxZoom: 19, opacity: 0.9 });
-  const streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' });
+  const streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OSM' });
 
   const hybridLayer = L.layerGroup([satellite, labels]);
   hybridLayer.addTo(map);
-
   L.control.layers({ '🛰️ ดาวเทียม': hybridLayer, '🗺️ แผนที่ปกติ': streets }, null, { position: 'bottomright' }).addTo(map);
   L.control.zoom({ position: 'bottomright' }).addTo(map);
 
+  // Map click → pin
   map.on('click', function(e) {
     if (!pinMode) return;
-    selectedLat = e.latlng.lat.toFixed(6);
-    selectedLng = e.latlng.lng.toFixed(6);
-    if (tempMarker) map.removeLayer(tempMarker);
-    tempMarker = L.marker(e.latlng, {
-      icon: L.divIcon({ className: '', html: '<div style="font-size:32px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3))">📍</div>', iconSize: [32, 32], iconAnchor: [16, 32] })
-    }).addTo(map);
-    pinMode = false;
-    document.getElementById('pinBanner').style.display = 'none';
-    document.getElementById('locationText').textContent = `${selectedLat}, ${selectedLng}`;
-    document.getElementById('locationDisplay').style.background = '#C8E6C9';
-    document.getElementById('reportModal').classList.add('show');
+    setDraggablePin(e.latlng.lat, e.latlng.lng, true);
   });
 
   setInterval(() => {
-    document.getElementById('clock').textContent = new Date().toLocaleString('th-TH', { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('clock').textContent = new Date().toLocaleString('th-TH', { hour:'2-digit', minute:'2-digit' });
   }, 1000);
 }
 
 // ============================================================
-// Markers
+// Draggable Pin
 // ============================================================
-function createFireIcon(type, size) {
+function setDraggablePin(lat, lng, openForm) {
+  selectedLat = parseFloat(lat).toFixed(6);
+  selectedLng = parseFloat(lng).toFixed(6);
+
+  if (tempMarker) map.removeLayer(tempMarker);
+
+  tempMarker = L.marker([lat, lng], {
+    draggable: true,
+    autoPan: true,
+    icon: L.divIcon({
+      className: '',
+      html: `<div style="font-size:38px;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.4));cursor:grab;animation:bounce 0.5s ease">📍</div>
+             <div style="position:absolute;top:42px;left:50%;transform:translateX(-50%);white-space:nowrap;background:rgba(0,0,0,0.7);color:#fff;padding:2px 8px;border-radius:6px;font-size:10px;font-family:'Noto Sans Thai'">ลากเพื่อย้าย</div>`,
+      iconSize: [38, 50], iconAnchor: [19, 42]
+    })
+  }).addTo(map);
+
+  // Update position on drag
+  tempMarker.on('dragend', function(e) {
+    const pos = e.target.getLatLng();
+    selectedLat = pos.lat.toFixed(6);
+    selectedLng = pos.lng.toFixed(6);
+    updateLocationDisplay();
+    showToast(`📍 ย้ายหมุดไปที่ ${selectedLat}, ${selectedLng}`);
+  });
+
+  tempMarker.on('dragstart', function() {
+    showToast('↕️ กำลังย้ายหมุด...');
+  });
+
+  updateLocationDisplay();
+  pinMode = false;
+  document.getElementById('pinBanner').style.display = 'none';
+
+  if (openForm) {
+    document.getElementById('reportModal').classList.add('show');
+  }
+}
+
+function updateLocationDisplay() {
+  document.getElementById('locationText').textContent = `${selectedLat}, ${selectedLng}`;
+  document.getElementById('locationDisplay').style.background = '#C8E6C9';
+}
+
+// ============================================================
+// Markers with Age Colors
+// ============================================================
+function createFireIcon(type, size, datetime) {
   const info = fireIcons[type] || fireIcons['อื่นๆ'];
   const s = sizeScale[size] || 32;
+  const age = getAgeInfo(datetime);
+
   return L.divIcon({
     className: '',
-    html: `<div style="width:${s}px;height:${s}px;border-radius:50%;background:${info.color};border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:${s*0.5}px;box-shadow:0 2px 10px rgba(0,0,0,0.3);cursor:pointer">${info.icon}</div>`,
+    html: `<div style="
+      width:${s}px;height:${s}px;border-radius:50%;
+      background:${age.color};
+      border:3px solid #fff;display:flex;align-items:center;justify-content:center;
+      font-size:${s*0.5}px;box-shadow:0 2px 10px rgba(0,0,0,0.3);cursor:pointer;
+      ${age.hours <= 24 ? 'animation:glow 2s ease-in-out infinite;' : ''}
+    ">${info.icon}</div>
+    <style>@keyframes glow{0%,100%{box-shadow:0 0 8px ${age.color}40}50%{box-shadow:0 0 20px ${age.color}80}}</style>`,
     iconSize: [s, s], iconAnchor: [s/2, s/2]
   });
 }
@@ -512,22 +699,26 @@ function renderMarkers() {
 
   filtered.forEach(r => {
     if (!r.lat || !r.lng) return;
-    const m = L.marker([r.lat, r.lng], { icon: createFireIcon(r.type, r.size) })
+    const age = getAgeInfo(r.datetime);
+    const m = L.marker([r.lat, r.lng], { icon: createFireIcon(r.type, r.size, r.datetime) })
       .addTo(map)
       .bindPopup(`
         <div class="fire-popup">
-          <h3>${fireIcons[r.type]?.icon || '🔥'} ${r.type}</h3>
+          <h3>${fireIcons[r.type]?.icon||'🔥'} ${r.type}
+            <span class="age-badge" style="background:${age.bg}">${age.label}</span>
+          </h3>
           <div class="meta">
-            <b>📅</b> ${r.datetime}<br>
+            <b>📅</b> ${r.datetime} (${age.hours} ชม.ที่แล้ว)<br>
             <b>👤</b> ${r.name}<br>
+            <b>📞</b> ${r.phone || '-'}<br>
             <b>📐</b> ขนาด: ${r.size}<br>
             ${r.detail ? `<b>📝</b> ${r.detail}<br>` : ''}
             <b>🆔</b> ${r.id}
           </div>
-          ${r.image && r.image.startsWith('http') ? `<img src="${r.image}" alt="ภาพหลักฐาน">` : ''}
-          <span class="status">${r.status || 'รอดำเนินการ'}</span>
+          ${r.image && r.image.startsWith('http') ? `<img src="${r.image}" alt="หลักฐาน">` : ''}
+          <span class="status" style="background:${age.hours<=24?'#FFCDD2':age.hours<=48?'#FFE0B2':age.hours<=72?'#FFF9C4':'#E0E0E0'};color:#333">${r.status||'รอดำเนินการ'}</span>
         </div>
-      `);
+      `, { maxWidth: 280 });
     markers.push(m);
   });
 }
@@ -550,29 +741,20 @@ function startReport() {
     showToast('📍 กำลังหาตำแหน่ง GPS...');
     navigator.geolocation.getCurrentPosition(
       pos => {
-        selectedLat = pos.coords.latitude.toFixed(6);
-        selectedLng = pos.coords.longitude.toFixed(6);
-        map.setView([selectedLat, selectedLng], 16);
-        if (tempMarker) map.removeLayer(tempMarker);
-        tempMarker = L.marker([selectedLat, selectedLng], {
-          icon: L.divIcon({ className: '', html: '<div style="font-size:32px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3))">📍</div>', iconSize: [32, 32], iconAnchor: [16, 32] })
-        }).addTo(map);
-        document.getElementById('locationText').textContent = `${selectedLat}, ${selectedLng} (GPS)`;
-        document.getElementById('locationDisplay').style.background = '#C8E6C9';
-        document.getElementById('reportModal').classList.add('show');
+        map.setView([pos.coords.latitude, pos.coords.longitude], 16);
+        setDraggablePin(pos.coords.latitude, pos.coords.longitude, true);
+        showToast('📍 ได้ตำแหน่ง GPS แล้ว — ลากหมุดเพื่อปรับจุดเผาไหม้');
       },
       () => enablePinMode(),
       { enableHighAccuracy: true, timeout: 8000 }
     );
-  } else {
-    enablePinMode();
-  }
+  } else enablePinMode();
 }
 
 function enablePinMode() {
   pinMode = true;
   document.getElementById('pinBanner').style.display = 'block';
-  showToast('👆 แตะตำแหน่งที่ต้องการบนแผนที่');
+  showToast('👆 แตะตำแหน่งบนแผนที่ แล้วลากหมุดปรับได้');
 }
 
 function closeModal() {
@@ -583,9 +765,7 @@ function closeModal() {
 function resetForm() {
   selectedType = ''; selectedSize = '';
   document.querySelectorAll('.type-card, .size-card').forEach(c => c.classList.remove('selected'));
-  document.getElementById('reporterName').value = '';
-  document.getElementById('reporterPhone').value = '';
-  document.getElementById('reportDetail').value = '';
+  ['reporterName','reporterPhone','reportDetail'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('photoPreview').style.display = 'none';
   document.getElementById('photoPlaceholder').style.display = 'block';
   document.getElementById('removePhoto').style.display = 'none';
@@ -667,7 +847,6 @@ async function submitReport() {
   } catch (err) {
     showToast('❌ เกิดข้อผิดพลาด: ' + err.message);
   }
-
   btn.disabled = false;
   btn.innerHTML = '🚀 ส่งรายงาน';
 }
@@ -683,93 +862,165 @@ async function loadReports() {
     if (data.success) {
       reports = data.reports;
       renderMarkers();
-      showToast(`✅ โหลดข้อมูลแล้ว (${reports.length} รายการ)`);
+      showToast(`✅ โหลดแล้ว ${reports.length} รายการ`);
     }
   } catch (err) {
-    showToast('⚠️ ไม่สามารถโหลดข้อมูล — ตรวจสอบ API URL');
+    showToast('⚠️ ไม่สามารถโหลดข้อมูล');
     console.error(err);
   }
 }
 
 // ============================================================
+// Admin System
+// ============================================================
+function showAdminLogin() {
+  document.getElementById('adminModal').classList.add('show');
+  if (isAdminLoggedIn) {
+    showAdminPanel();
+  } else {
+    document.getElementById('adminLoginView').style.display = 'block';
+    document.getElementById('adminPanelView').style.display = 'none';
+  }
+}
+
+function closeAdminModal() {
+  document.getElementById('adminModal').classList.remove('show');
+}
+
+function adminLogin() {
+  const u = document.getElementById('adminUser').value.trim();
+  const p = document.getElementById('adminPass').value;
+  const cred = _getAdm();
+
+  if (u === cred.u && p === cred.p) {
+    isAdminLoggedIn = true;
+    showAdminPanel();
+    showToast('✅ เข้าสู่ระบบสำเร็จ');
+  } else {
+    showToast('❌ ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
+  }
+  document.getElementById('adminUser').value = '';
+  document.getElementById('adminPass').value = '';
+}
+
+function showAdminPanel() {
+  document.getElementById('adminLoginView').style.display = 'none';
+  document.getElementById('adminPanelView').style.display = 'block';
+
+  // Sheet link
+  document.getElementById('sheetLink').href = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`;
+
+  // Stats
+  const pending = reports.filter(r => r.status === 'รอดำเนินการ').length;
+  const today = new Date().toLocaleDateString('th-TH');
+  const todayCount = reports.filter(r => r.datetime && r.datetime.includes(today.replace(/\//g, '/'))).length;
+
+  document.getElementById('adminStats').innerHTML = `
+    📊 รายงานทั้งหมด: <b>${reports.length}</b><br>
+    🔴 รอดำเนินการ: <b>${pending}</b><br>
+    📅 วันนี้: <b>${todayCount}</b> รายงาน<br>
+    ⏱️ อัปเดตล่าสุด: ${new Date().toLocaleString('th-TH')}
+  `;
+}
+
+function changePassword() {
+  const pin = document.getElementById('pinCode').value;
+  const newP = document.getElementById('newPass').value;
+  const confirmP = document.getElementById('confirmPass').value;
+
+  if (pin !== _0xADM.k) return showToast('❌ PIN Code ไม่ถูกต้อง');
+  if (!newP || newP.length < 6) return showToast('❌ รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร');
+  if (newP !== confirmP) return showToast('❌ รหัสผ่านไม่ตรงกัน');
+
+  _setAdm(_getAdm().u, newP);
+  showToast('✅ เปลี่ยนรหัสผ่านสำเร็จ');
+  document.getElementById('pinCode').value = '';
+  document.getElementById('newPass').value = '';
+  document.getElementById('confirmPass').value = '';
+}
+
+function adminLogout() {
+  isAdminLoggedIn = false;
+  document.getElementById('adminLoginView').style.display = 'block';
+  document.getElementById('adminPanelView').style.display = 'none';
+  showToast('🚪 ออกจากระบบแล้ว');
+}
+
+// ============================================================
 // AI Summary
 // ============================================================
-function showAISummary() {
-  document.getElementById('aiModal').classList.add('show');
-  generateAISummary();
-}
-function closeAIModal() {
-  document.getElementById('aiModal').classList.remove('show');
-}
+function showAISummary() { document.getElementById('aiModal').classList.add('show'); generateAISummary(); }
+function closeAIModal() { document.getElementById('aiModal').classList.remove('show'); }
 
 function generateAISummary() {
   const el = document.getElementById('aiContent');
-  if (reports.length === 0) {
-    el.innerHTML = '<p style="text-align:center;padding:40px;color:#999">ยังไม่มีข้อมูลรายงาน</p>';
-    return;
-  }
+  if (reports.length === 0) { el.innerHTML = '<div class="no-data">ยังไม่มีข้อมูล</div>'; return; }
 
   const total = reports.length;
   const typeCounts = {}, sizeCounts = {}, dateCounts = {};
+  let age24 = 0, age48 = 0, age72 = 0, ageOld = 0;
 
   reports.forEach(r => {
-    typeCounts[r.type] = (typeCounts[r.type] || 0) + 1;
-    sizeCounts[r.size] = (sizeCounts[r.size] || 0) + 1;
+    typeCounts[r.type] = (typeCounts[r.type]||0)+1;
+    sizeCounts[r.size] = (sizeCounts[r.size]||0)+1;
     const dateKey = r.datetime ? r.datetime.split(' ')[0] : 'ไม่ทราบ';
-    dateCounts[dateKey] = (dateCounts[dateKey] || 0) + 1;
+    dateCounts[dateKey] = (dateCounts[dateKey]||0)+1;
+    const a = getAgeInfo(r.datetime);
+    if (a.hours <= 24) age24++;
+    else if (a.hours <= 48) age48++;
+    else if (a.hours <= 72) age72++;
+    else ageOld++;
   });
 
-  const topType = Object.entries(typeCounts).sort((a,b) => b[1]-a[1])[0];
-  const pendingCount = reports.filter(r => r.status === 'รอดำเนินการ').length;
+  const topType = Object.entries(typeCounts).sort((a,b)=>b[1]-a[1])[0];
+  const pendingCount = reports.filter(r=>r.status==='รอดำเนินการ').length;
   const dates = Object.keys(dateCounts).sort().reverse();
-  const recentDate = dates[0] || '-';
-  const recentCount = dateCounts[recentDate] || 0;
 
   let riskLevel = '🟢 ต่ำ', riskColor = '#4CAF50';
-  if (total > 20 || (sizeCounts['ใหญ่'] || 0) > 5) { riskLevel = '🔴 สูงมาก'; riskColor = '#E63946'; }
-  else if (total > 10 || (sizeCounts['ใหญ่'] || 0) > 2) { riskLevel = '🟠 สูง'; riskColor = '#FF6B35'; }
+  if (total > 20 || (sizeCounts['ใหญ่']||0) > 5) { riskLevel = '🔴 สูงมาก'; riskColor = '#E63946'; }
+  else if (total > 10 || (sizeCounts['ใหญ่']||0) > 2) { riskLevel = '🟠 สูง'; riskColor = '#FF6B35'; }
   else if (total > 5) { riskLevel = '🟡 ปานกลาง'; riskColor = '#E9C46A'; }
 
   el.innerHTML = `
     <div style="text-align:center;margin-bottom:20px">
-      <div style="font-size:12px;color:#888;margin-bottom:4px">บทสรุปผู้บริหาร — AI Analytics</div>
+      <div style="font-size:12px;color:#888">บทสรุปผู้บริหาร — AI Analytics</div>
       <div style="font-size:11px;color:#aaa">ข้อมูล ณ ${new Date().toLocaleString('th-TH')}</div>
     </div>
     <div class="section total">
-      <h3>📊 ภาพรวมสถานการณ์</h3>
-      <span class="big-number">${total}</span> จุดเผาไหม้ที่รายงาน<br>
+      <h3>📊 ภาพรวม</h3>
+      <span class="big-number">${total}</span> จุดเผาไหม้<br>
       <span style="color:${riskColor};font-weight:700">ระดับความเสี่ยง: ${riskLevel}</span><br>
-      รอดำเนินการ: <b>${pendingCount}</b> รายการ
+      รอดำเนินการ: <b>${pendingCount}</b>
+    </div>
+    <div class="section" style="border-color:#E63946">
+      <h3>⏱️ ความเร่งด่วน</h3>
+      <span style="color:#E63946">🔴</span> เกิดใน 24 ชม.: <b>${age24}</b> จุด<br>
+      <span style="color:#FF6B35">🟠</span> 24-48 ชม.: <b>${age48}</b> จุด<br>
+      <span style="color:#E9C46A">🟡</span> 48-72 ชม.: <b>${age72}</b> จุด<br>
+      <span style="color:#999">⚪</span> เกิน 72 ชม.: <b>${ageOld}</b> จุด
     </div>
     <div class="section type">
-      <h3>🔥 สัดส่วนตามประเภท</h3>
-      ${Object.entries(typeCounts).map(([t, c]) => {
-        const pct = ((c / total) * 100).toFixed(0);
-        return `<div style="margin:4px 0">${fireIcons[t]?.icon || '🔥'} ${t}: <b>${c}</b> (${pct}%)
-          <div style="background:#e0e0e0;border-radius:4px;height:6px;margin-top:2px">
-            <div style="background:var(--fire);height:100%;border-radius:4px;width:${pct}%"></div>
-          </div></div>`;
+      <h3>🔥 ตามประเภท</h3>
+      ${Object.entries(typeCounts).map(([t,c])=>{
+        const pct=((c/total)*100).toFixed(0);
+        return `<div style="margin:4px 0">${fireIcons[t]?.icon||'🔥'} ${t}: <b>${c}</b> (${pct}%)
+          <div style="background:#e0e0e0;border-radius:4px;height:6px;margin-top:2px"><div style="background:var(--fire);height:100%;border-radius:4px;width:${pct}%"></div></div></div>`;
       }).join('')}
-      <div style="margin-top:8px;font-size:13px">⚡ ประเภทที่พบมากสุด: <b>${topType ? topType[0] : '-'}</b></div>
     </div>
     <div class="section size">
-      <h3>📐 ขนาดพื้นที่เผาไหม้</h3>
-      ${['เล็ก','กลาง','ใหญ่'].map(s => `${s}: <b>${sizeCounts[s]||0}</b> จุด`).join(' &nbsp;|&nbsp; ')}
-    </div>
-    <div class="section trend">
-      <h3>📅 ข้อมูลล่าสุด</h3>
-      วันที่ล่าสุด: <b>${recentDate}</b> (${recentCount} รายงาน)<br>
-      จำนวนวันที่มีรายงาน: <b>${dates.length}</b> วัน
+      <h3>📐 ขนาด</h3>
+      ${['เล็ก','กลาง','ใหญ่'].map(s=>`${s}: <b>${sizeCounts[s]||0}</b>`).join(' | ')}
     </div>
     <div class="section" style="border-color:var(--danger)">
-      <h3>💡 ข้อเสนอแนะเชิงนโยบาย</h3>
+      <h3>💡 ข้อเสนอแนะ</h3>
       <div style="font-size:13px;line-height:1.8">
-        ${topType && topType[0] === 'เผาไร่นา' ? '• เร่งรณรงค์เกษตรปลอดการเผา<br>• ส่งเสริมไถกลบตอซัง' :
-          topType && topType[0] === 'เผาขยะ' ? '• เพิ่มจุดรับทิ้งขยะในชุมชน<br>• รณรงค์คัดแยกขยะต้นทาง' :
-          topType && topType[0] === 'เผาป่า' ? '• เพิ่มอาสาเฝ้าระวังไฟป่า<br>• จัดทำแนวกันไฟ' :
+        ${age24 > 0 ? `🚨 เร่งตรวจสอบ ${age24} จุดที่เกิดใน 24 ชม.<br>` : ''}
+        ${topType&&topType[0]==='เผาไร่นา'?'• รณรงค์เกษตรปลอดการเผา<br>• ส่งเสริมไถกลบตอซัง':
+          topType&&topType[0]==='เผาขยะ'?'• เพิ่มจุดรับทิ้งขยะชุมชน<br>• รณรงค์คัดแยกขยะ':
+          topType&&topType[0]==='เผาป่า'?'• เพิ่มอาสาเฝ้าระวังไฟป่า<br>• จัดแนวกันไฟ':
           '• เพิ่มลาดตระเวนพื้นที่เสี่ยง'}<br>
-        • สั่งการตรวจสอบจุดรอดำเนินการ ${pendingCount} รายการ<br>
-        • พิจารณาบังคับใช้ พ.ร.บ.สาธารณสุข สำหรับผู้กระทำผิดซ้ำ
+        • บังคับใช้ พ.ร.บ.สาธารณสุข กับผู้กระทำผิดซ้ำ<br>
+        • แจ้งสายด่วน 1362 / 1784
       </div>
     </div>`;
 }
@@ -777,244 +1028,125 @@ function generateAISummary() {
 // ============================================================
 // Dashboard
 // ============================================================
-let chartType = null, chartDaily = null, chartTime = null, chartArea = null;
-let dashFiltered = [];
+let chartType=null,chartDaily=null,chartTime=null,chartArea=null;
+let dashFiltered=[];
 
-function openDashboard() {
-  document.getElementById('dashOverlay').classList.add('show');
-  dashFiltered = [...reports];
-  renderDashboard();
-}
-function closeDashboard() {
-  document.getElementById('dashOverlay').classList.remove('show');
-}
+function openDashboard(){document.getElementById('dashOverlay').classList.add('show');dashFiltered=[...reports];renderDashboard();}
+function closeDashboard(){document.getElementById('dashOverlay').classList.remove('show');}
 
-function applyDashFilter() {
-  const from = document.getElementById('dashDateFrom').value;
-  const to = document.getElementById('dashDateTo').value;
-  dashFiltered = reports.filter(r => {
-    if (!r.datetime) return false;
-    const d = parseDateTH(r.datetime);
-    if (!d) return true;
-    if (from && d < new Date(from)) return false;
-    if (to) { const toEnd = new Date(to); toEnd.setHours(23,59,59); if (d > toEnd) return false; }
+function applyDashFilter(){
+  const from=document.getElementById('dashDateFrom').value, to=document.getElementById('dashDateTo').value;
+  dashFiltered=reports.filter(r=>{
+    if(!r.datetime)return false;const d=parseDateTH(r.datetime);if(!d)return true;
+    if(from&&d<new Date(from))return false;
+    if(to){const t=new Date(to);t.setHours(23,59,59);if(d>t)return false;}
     return true;
   });
   renderDashboard();
 }
+function resetDashFilter(){document.getElementById('dashDateFrom').value='';document.getElementById('dashDateTo').value='';dashFiltered=[...reports];renderDashboard();}
 
-function resetDashFilter() {
-  document.getElementById('dashDateFrom').value = '';
-  document.getElementById('dashDateTo').value = '';
-  dashFiltered = [...reports];
-  renderDashboard();
+function parseDateTH(str){
+  if(!str)return null;
+  const parts=str.toString().split(' ');const dmy=parts[0].split('/');
+  const hms=parts[1]?parts[1].split(':'):[0,0,0];
+  if(dmy.length<3)return null;
+  return new Date(dmy[2],dmy[1]-1,dmy[0],hms[0]||0,hms[1]||0,hms[2]||0);
 }
 
-function parseDateTH(str) {
-  if (!str) return null;
-  const parts = str.split(' ');
-  const dmy = parts[0].split('/');
-  const hms = parts[1] ? parts[1].split(':') : [0, 0, 0];
-  if (dmy.length < 3) return null;
-  return new Date(dmy[2], dmy[1] - 1, dmy[0], hms[0]||0, hms[1]||0, hms[2]||0);
+function destroyCharts(){
+  [chartType,chartDaily,chartTime,chartArea].forEach(c=>{if(c)c.destroy();});
+  chartType=chartDaily=chartTime=chartArea=null;
 }
 
-function destroyCharts() {
-  if (chartType) { chartType.destroy(); chartType = null; }
-  if (chartDaily) { chartDaily.destroy(); chartDaily = null; }
-  if (chartTime) { chartTime.destroy(); chartTime = null; }
-  if (chartArea) { chartArea.destroy(); chartArea = null; }
-}
-
-function renderDashboard() {
-  const data = dashFiltered;
-
-  if (data.length === 0) {
-    document.getElementById('kpiTotal').textContent = '0';
-    document.getElementById('kpiPending').textContent = '0';
-    document.getElementById('kpiTopType').textContent = '-';
-    document.getElementById('kpiPeakTime').textContent = '-';
-    document.getElementById('areaTableContainer').innerHTML = '<div class="no-data">ไม่มีข้อมูลในช่วงเวลาที่เลือก</div>';
-    destroyCharts();
-    return;
+function renderDashboard(){
+  const data=dashFiltered;
+  if(data.length===0){
+    document.getElementById('kpiTotal').textContent='0';
+    document.getElementById('kpiPending').textContent='0';
+    document.getElementById('kpiTopType').textContent='-';
+    document.getElementById('kpiPeakTime').textContent='-';
+    document.getElementById('areaTableContainer').innerHTML='<div class="no-data">ไม่มีข้อมูล</div>';
+    destroyCharts();return;
   }
 
-  // ========== Aggregate ==========
-  const typeCounts = {}, dailyCounts = {};
-  const timeCounts = { 'เช้ามืด\n(00-06)':0, 'เช้า\n(06-09)':0, 'สาย\n(09-12)':0, 'บ่าย\n(12-15)':0, 'เย็น\n(15-18)':0, 'ค่ำ\n(18-21)':0, 'ดึก\n(21-24)':0 };
-  const timeKeys = Object.keys(timeCounts);
-  const areaCounts = {};
-  let pendingCount = 0;
+  const typeCounts={},dailyCounts={};
+  const timeCounts={'เช้ามืด\n(00-06)':0,'เช้า\n(06-09)':0,'สาย\n(09-12)':0,'บ่าย\n(12-15)':0,'เย็น\n(15-18)':0,'ค่ำ\n(18-21)':0,'ดึก\n(21-24)':0};
+  const timeKeys=Object.keys(timeCounts);
+  const areaCounts={};let pendingCount=0;
 
-  data.forEach(r => {
-    typeCounts[r.type] = (typeCounts[r.type] || 0) + 1;
-    if (r.status === 'รอดำเนินการ') pendingCount++;
-    const dt = parseDateTH(r.datetime);
-    if (dt) {
-      const dayKey = `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
-      dailyCounts[dayKey] = (dailyCounts[dayKey] || 0) + 1;
-      const h = dt.getHours();
-      if (h < 6) timeCounts[timeKeys[0]]++;
-      else if (h < 9) timeCounts[timeKeys[1]]++;
-      else if (h < 12) timeCounts[timeKeys[2]]++;
-      else if (h < 15) timeCounts[timeKeys[3]]++;
-      else if (h < 18) timeCounts[timeKeys[4]]++;
-      else if (h < 21) timeCounts[timeKeys[5]]++;
+  data.forEach(r=>{
+    typeCounts[r.type]=(typeCounts[r.type]||0)+1;
+    if(r.status==='รอดำเนินการ')pendingCount++;
+    const dt=parseDateTH(r.datetime);
+    if(dt){
+      const dayKey=`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+      dailyCounts[dayKey]=(dailyCounts[dayKey]||0)+1;
+      const h=dt.getHours();
+      if(h<6)timeCounts[timeKeys[0]]++;else if(h<9)timeCounts[timeKeys[1]]++;
+      else if(h<12)timeCounts[timeKeys[2]]++;else if(h<15)timeCounts[timeKeys[3]]++;
+      else if(h<18)timeCounts[timeKeys[4]]++;else if(h<21)timeCounts[timeKeys[5]]++;
       else timeCounts[timeKeys[6]]++;
     }
-    if (r.lat && r.lng) {
-      const gridLat = (Math.round(r.lat * 100) / 100).toFixed(2);
-      const gridLng = (Math.round(r.lng * 100) / 100).toFixed(2);
-      const areaKey = `${gridLat},${gridLng}`;
-      if (!areaCounts[areaKey]) areaCounts[areaKey] = { count: 0, lat: parseFloat(gridLat), lng: parseFloat(gridLng), types: {} };
-      areaCounts[areaKey].count++;
-      areaCounts[areaKey].types[r.type] = (areaCounts[areaKey].types[r.type] || 0) + 1;
+    if(r.lat&&r.lng){
+      const gLat=(Math.round(r.lat*100)/100).toFixed(2),gLng=(Math.round(r.lng*100)/100).toFixed(2);
+      const aKey=`${gLat},${gLng}`;
+      if(!areaCounts[aKey])areaCounts[aKey]={count:0,lat:parseFloat(gLat),lng:parseFloat(gLng),types:{}};
+      areaCounts[aKey].count++;areaCounts[aKey].types[r.type]=(areaCounts[aKey].types[r.type]||0)+1;
     }
   });
 
-  // ========== KPI ==========
-  document.getElementById('kpiTotal').textContent = data.length;
-  document.getElementById('kpiPending').textContent = pendingCount;
-  const topType = Object.entries(typeCounts).sort((a,b) => b[1]-a[1])[0];
-  document.getElementById('kpiTopType').textContent = topType ? topType[0] : '-';
-  const peakSlot = Object.entries(timeCounts).sort((a,b) => b[1]-a[1])[0];
-  document.getElementById('kpiPeakTime').textContent = peakSlot ? peakSlot[0].split('\n')[0] : '-';
+  document.getElementById('kpiTotal').textContent=data.length;
+  document.getElementById('kpiPending').textContent=pendingCount;
+  const topType=Object.entries(typeCounts).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById('kpiTopType').textContent=topType?topType[0]:'-';
+  const peakSlot=Object.entries(timeCounts).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById('kpiPeakTime').textContent=peakSlot?peakSlot[0].split('\n')[0]:'-';
 
   destroyCharts();
+  const typeColors={'เผาขยะ':'#8D99AE','เผาไร่นา':'#E9C46A','เผาป่า':'#2D6A4F','อื่นๆ':'#E63946'};
 
-  const typeColors = { 'เผาขยะ': '#8D99AE', 'เผาไร่นา': '#E9C46A', 'เผาป่า': '#2D6A4F', 'อื่นๆ': '#E63946' };
+  chartType=new Chart(document.getElementById('chartType'),{type:'doughnut',data:{labels:Object.keys(typeCounts).map(t=>`${fireIcons[t]?.icon||'🔥'} ${t}`),datasets:[{data:Object.values(typeCounts),backgroundColor:Object.keys(typeCounts).map(t=>typeColors[t]||'#999'),borderWidth:3,borderColor:'#fff',hoverOffset:8}]},options:{responsive:true,cutout:'55%',plugins:{legend:{position:'bottom',labels:{padding:16,font:{family:'Noto Sans Thai',size:12}}},tooltip:{callbacks:{label:ctx=>` ${ctx.parsed} จุด (${((ctx.parsed/data.length)*100).toFixed(1)}%)`}}}}});
 
-  // ========== Chart 1: Type Doughnut ==========
-  chartType = new Chart(document.getElementById('chartType'), {
-    type: 'doughnut',
-    data: {
-      labels: Object.keys(typeCounts).map(t => `${fireIcons[t]?.icon||'🔥'} ${t}`),
-      datasets: [{ data: Object.values(typeCounts), backgroundColor: Object.keys(typeCounts).map(t => typeColors[t]||'#999'), borderWidth: 3, borderColor: '#fff', hoverOffset: 8 }]
-    },
-    options: {
-      responsive: true, cutout: '55%',
-      plugins: {
-        legend: { position: 'bottom', labels: { padding: 16, font: { family: 'Noto Sans Thai', size: 12 } } },
-        tooltip: { callbacks: { label: ctx => ` ${ctx.parsed} จุด (${((ctx.parsed/data.length)*100).toFixed(1)}%)` } }
-      }
-    }
-  });
+  const sortedDays=Object.keys(dailyCounts).sort();
+  const dayLabels=sortedDays.map(d=>{const dt=new Date(d);return `${dt.getDate()}/${dt.getMonth()+1}`;});
+  const dayData=sortedDays.map(d=>dailyCounts[d]);
+  const maxDay=Math.max(...dayData,1);
 
-  // ========== Chart 2: Daily Bar ==========
-  const sortedDays = Object.keys(dailyCounts).sort();
-  const dayLabels = sortedDays.map(d => { const dt = new Date(d); return `${dt.getDate()}/${dt.getMonth()+1}`; });
-  const dayData = sortedDays.map(d => dailyCounts[d]);
-  const maxDay = Math.max(...dayData, 1);
+  chartDaily=new Chart(document.getElementById('chartDaily'),{type:'bar',data:{labels:dayLabels,datasets:[{label:'จำนวนจุดเผา',data:dayData,backgroundColor:dayData.map(v=>{const r=v/maxDay;return r>0.8?'#E63946':r>0.5?'#FF6B35':r>0.3?'#E9C46A':'#A8DADC';}),borderRadius:6,borderSkipped:false}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:1,font:{size:11}},title:{display:true,text:'จำนวน',font:{family:'Noto Sans Thai',size:12}}},x:{ticks:{font:{size:10},maxRotation:45}}}}});
 
-  chartDaily = new Chart(document.getElementById('chartDaily'), {
-    type: 'bar',
-    data: {
-      labels: dayLabels,
-      datasets: [{
-        label: 'จำนวนจุดเผา', data: dayData,
-        backgroundColor: dayData.map(v => { const r = v/maxDay; return r>0.8?'#E63946':r>0.5?'#FF6B35':r>0.3?'#E9C46A':'#A8DADC'; }),
-        borderRadius: 6, borderSkipped: false
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { title: ctx => `วันที่ ${sortedDays[ctx[0].dataIndex]}` } } },
-      scales: {
-        y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11 } }, title: { display: true, text: 'จำนวน (จุด)', font: { family: 'Noto Sans Thai', size: 12 } } },
-        x: { ticks: { font: { size: 10 }, maxRotation: 45 } }
-      }
-    }
-  });
+  const tGrad=['#2D3A8C','#3F37C9','#6C63FF','#FF6B35','#E9C46A','#E76F51','#1A1A2E'];
+  chartTime=new Chart(document.getElementById('chartTime'),{type:'bar',data:{labels:timeKeys.map(t=>t.split('\n')[0]),datasets:[{label:'จำนวน',data:timeKeys.map(k=>timeCounts[k]),backgroundColor:tGrad,borderRadius:6,borderSkipped:false,barThickness:36}]},options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{stepSize:1,font:{size:11}}},y:{ticks:{font:{family:'Noto Sans Thai',size:12}}}}}});
 
-  // ========== Chart 3: Time Slot ==========
-  const timeGradient = ['#2D3A8C','#3F37C9','#6C63FF','#FF6B35','#E9C46A','#E76F51','#1A1A2E'];
-  chartTime = new Chart(document.getElementById('chartTime'), {
-    type: 'bar',
-    data: {
-      labels: timeKeys.map(t => t.split('\n')[0]),
-      datasets: [{ label: 'จำนวน', data: timeKeys.map(k => timeCounts[k]), backgroundColor: timeGradient, borderRadius: 6, borderSkipped: false, barThickness: 36 }]
-    },
-    options: {
-      responsive: true, indexAxis: 'y',
-      plugins: { legend: { display: false }, tooltip: { callbacks: { title: ctx => timeKeys[ctx[0].dataIndex].replace('\n',' '), label: ctx => ` ${ctx.parsed.x} รายงาน` } } },
-      scales: {
-        x: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11 } }, title: { display: true, text: 'จำนวน (รายงาน)', font: { family: 'Noto Sans Thai', size: 12 } } },
-        y: { ticks: { font: { family: 'Noto Sans Thai', size: 12 } } }
-      }
-    }
-  });
+  const sortedAreas=Object.entries(areaCounts).sort((a,b)=>b[1].count-a[1].count).slice(0,10);
+  const maxAC=sortedAreas.length>0?sortedAreas[0][1].count:1;
 
-  // ========== Area Table ==========
-  const sortedAreas = Object.entries(areaCounts).sort((a,b) => b[1].count - a[1].count).slice(0, 10);
-  const maxAreaCount = sortedAreas.length > 0 ? sortedAreas[0][1].count : 1;
-
-  if (sortedAreas.length === 0) {
-    document.getElementById('areaTableContainer').innerHTML = '<div class="no-data">ไม่มีข้อมูลพิกัด</div>';
-  } else {
-    let html = `<table class="area-table"><thead><tr><th>#</th><th>โซนพิกัด</th><th>ประเภทหลัก</th><th>จำนวน</th><th>สัดส่วน</th></tr></thead><tbody>`;
-    sortedAreas.forEach(([key, info], i) => {
-      const rankClass = i < 1 ? 'r1' : i < 2 ? 'r2' : i < 3 ? 'r3' : 'r4';
-      const topAreaType = Object.entries(info.types).sort((a,b) => b[1]-a[1])[0];
-      const pct = ((info.count / data.length) * 100).toFixed(1);
-      const barW = ((info.count / maxAreaCount) * 100).toFixed(0);
-      html += `<tr onclick="zoomToArea(${info.lat},${info.lng})" style="cursor:pointer">
-        <td><span class="area-rank ${rankClass}">${i+1}</span></td>
-        <td style="font-size:12px">${info.lat.toFixed(3)}, ${info.lng.toFixed(3)}</td>
-        <td>${fireIcons[topAreaType?.[0]]?.icon||'🔥'} ${topAreaType?.[0]||'-'}</td>
-        <td><b>${info.count}</b></td>
-        <td><div style="display:flex;align-items:center;gap:6px"><div class="area-bar-bg" style="flex:1"><div class="area-bar-fill" style="width:${barW}%"></div></div><span style="font-size:11px;color:#888">${pct}%</span></div></td>
-      </tr>`;
+  if(sortedAreas.length===0){document.getElementById('areaTableContainer').innerHTML='<div class="no-data">ไม่มีข้อมูลพิกัด</div>';}
+  else{
+    let html=`<table class="area-table"><thead><tr><th>#</th><th>โซน</th><th>ประเภท</th><th>จำนวน</th><th>สัดส่วน</th></tr></thead><tbody>`;
+    sortedAreas.forEach(([k,info],i)=>{
+      const rc=i<1?'r1':i<2?'r2':i<3?'r3':'r4';
+      const top=Object.entries(info.types).sort((a,b)=>b[1]-a[1])[0];
+      const pct=((info.count/data.length)*100).toFixed(1);
+      const bW=((info.count/maxAC)*100).toFixed(0);
+      html+=`<tr onclick="zoomToArea(${info.lat},${info.lng})" style="cursor:pointer"><td><span class="area-rank ${rc}">${i+1}</span></td><td style="font-size:12px">${info.lat.toFixed(3)}, ${info.lng.toFixed(3)}</td><td>${fireIcons[top?.[0]]?.icon||'🔥'} ${top?.[0]||'-'}</td><td><b>${info.count}</b></td><td><div style="display:flex;align-items:center;gap:6px"><div class="area-bar-bg" style="flex:1"><div class="area-bar-fill" style="width:${bW}%"></div></div><span style="font-size:11px;color:#888">${pct}%</span></div></td></tr>`;
     });
-    html += '</tbody></table>';
-    document.getElementById('areaTableContainer').innerHTML = html;
+    html+='</tbody></table>';
+    document.getElementById('areaTableContainer').innerHTML=html;
   }
 
-  // ========== Chart 5: Area Bubble ==========
-  const bubbleData = sortedAreas.map(([key, info]) => ({ x: info.lng, y: info.lat, r: Math.max(6, Math.min(30, info.count * 5)) }));
-  const bubbleColors = sortedAreas.map(([key, info]) => {
-    const top = Object.entries(info.types).sort((a,b) => b[1]-a[1])[0]?.[0];
-    return (typeColors[top] || '#FF6B35') + 'BB';
-  });
+  const bubbleData=sortedAreas.map(([k,info])=>({x:info.lng,y:info.lat,r:Math.max(6,Math.min(30,info.count*5))}));
+  const bColors=sortedAreas.map(([k,info])=>{const t=Object.entries(info.types).sort((a,b)=>b[1]-a[1])[0]?.[0];return(typeColors[t]||'#FF6B35')+'BB';});
 
-  chartArea = new Chart(document.getElementById('chartArea'), {
-    type: 'bubble',
-    data: {
-      datasets: [{
-        label: 'จุดเผาไหม้', data: bubbleData,
-        backgroundColor: bubbleColors,
-        borderColor: bubbleColors.map(c => c.replace('BB','FF')),
-        borderWidth: 2
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: ctx => { const a = sortedAreas[ctx.dataIndex]; return [`พิกัด: ${a[1].lat.toFixed(3)}, ${a[1].lng.toFixed(3)}`, `จำนวน: ${a[1].count} จุด`]; } } }
-      },
-      scales: {
-        x: { title: { display: true, text: 'ลองจิจูด', font: { family: 'Noto Sans Thai', size: 12 } }, ticks: { font: { size: 10 } } },
-        y: { title: { display: true, text: 'ละติจูด', font: { family: 'Noto Sans Thai', size: 12 } }, ticks: { font: { size: 10 } } }
-      }
-    }
-  });
+  chartArea=new Chart(document.getElementById('chartArea'),{type:'bubble',data:{datasets:[{label:'จุดเผาไหม้',data:bubbleData,backgroundColor:bColors,borderColor:bColors.map(c=>c.replace('BB','FF')),borderWidth:2}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const a=sortedAreas[ctx.dataIndex];return[`พิกัด: ${a[1].lat.toFixed(3)}, ${a[1].lng.toFixed(3)}`,`จำนวน: ${a[1].count} จุด`];}}}},scales:{x:{title:{display:true,text:'ลองจิจูด',font:{family:'Noto Sans Thai',size:12}}},y:{title:{display:true,text:'ละติจูด',font:{family:'Noto Sans Thai',size:12}}}}}});
 }
 
-function zoomToArea(lat, lng) {
-  closeDashboard();
-  map.setView([lat, lng], 14);
-  showToast(`📍 ซูมไปยังโซน ${lat.toFixed(3)}, ${lng.toFixed(3)}`);
-}
+function zoomToArea(lat,lng){closeDashboard();map.setView([lat,lng],14);showToast(`📍 ซูมไปโซน ${lat.toFixed(3)}, ${lng.toFixed(3)}`);}
 
 // ============================================================
 // Toast
 // ============================================================
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
 
 // ============================================================
 // Init
